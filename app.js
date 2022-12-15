@@ -2,6 +2,8 @@
 const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
+
  
 const app = express();
  
@@ -19,12 +21,26 @@ app.use(express.urlencoded({extended: true}));
 // CONNECT TO OUR DATABASE
 mongoose.connect("mongodb+srv://admin:123456789-@cluster0.emr7fqc.mongodb.net/userDB" , {useNewUrlParser: true});
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
     email: String,
     password: String
-};
+});
+
+
+// MONGOOSE-ENCRYPTION
+
+const secret = "Thisisourlittlesecret.";
+
+userSchema.plugin(encrypt, {secret: secret, encryptedFields:["password"]});
+
+
 
 const User = new mongoose.model("User", userSchema);
+
+
+
+
+
 app.get("/", function(req,res){
     res.render("home");
 });
